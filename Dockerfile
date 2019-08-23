@@ -21,12 +21,15 @@ RUN rustup install nightly
 
 # install wasm toolchain for polkadot
 RUN rustup target add wasm32-unknown-unknown --toolchain nightly
+RUN rustup default nightly-2019-07-14
+RUN rustup target add wasm32-unknown-unknown --toolchain nightly-2019-07-14
+
 # Install wasm-gc. It's useful for stripping slimming down wasm binaries.
 # (polkadot)
 RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
 
 # setup default stable channel
-RUN rustup default nightly
+RUN rustup default nightly-2019-07-14
 
 # show backtraces
 ENV RUST_BACKTRACE 1
@@ -48,7 +51,7 @@ COPY . /build
 
 RUN /bin/bash build.sh
 
-RUN cargo build && cargo test
+RUN cargo build --release && cargo test
 
 
 FROM ubuntu:xenial
@@ -62,8 +65,9 @@ RUN apt -y update && \
     libssl-dev dnsutils
 
 RUN mkdir -p /runtime/target/debug/
-COPY --from=builder /build/target/debug/node ./target/debug/node
+COPY --from=builder /build/target/release/node ./target/release/node
 COPY --from=builder /build/start-node.sh ./start-node.sh
+COPY --from=builder /build/chainspec.json ./chainspec.json
 
 RUN chmod a+x *.sh
 RUN ls -la .
