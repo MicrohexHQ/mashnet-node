@@ -17,7 +17,7 @@
 // If you feel like getting in touch with us, you can do so at info@botlabs.org
 
 
-//! KILT CLI parser
+//! KILT CLI parser 
 
 use crate::service;
 use futures::{future, Future, sync::oneshot};
